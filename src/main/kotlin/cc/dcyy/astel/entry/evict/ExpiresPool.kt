@@ -1,0 +1,35 @@
+package cc.dcyy.astel.entry.evict
+
+import cc.dcyy.astel.entry.Key
+
+/**
+ * All the temporary keys were put in this pool.
+ * Scan this pool regularly to clean up the expired keys and values.
+ */
+object ExpiresPool {
+
+    private val set = LinkedHashSet<Key>()
+
+    fun put(key: Key) {
+        if (set.contains(key)) {
+            set.remove(key)
+        }
+        set.add(key)
+    }
+
+    fun remove(key: Key) {
+        set.remove(key)
+    }
+
+    /**
+     * Returns a new list with the keys of this pool randomly shuffled.
+     */
+    fun shuffle(): List<Key> {
+        return set.shuffled()
+    }
+
+    fun size(): Int {
+        return set.size
+    }
+
+}
