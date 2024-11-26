@@ -19,7 +19,7 @@ object Root {
         }
         hm[key] = value
 
-        if (key.isTemporary()) {
+        if (value.isTemporary()) {
             ExpiresPool.put(key)
         }
     }
@@ -28,9 +28,8 @@ object Root {
      * Remove the key and its value if exists.
      */
     fun remove(key: Key) {
-        val index = indexOf(key)
-        tbl[index]?.remove(key)
-        if (key.isTemporary()) {
+        val value = tbl[indexOf(key)]?.remove(key) ?: return
+        if (value.isTemporary()) {
             ExpiresPool.remove(key)
         }
     }
@@ -46,16 +45,17 @@ object Root {
 
     /**
      * Get the value by its key if exists.
-     * When the expired key is got, the key and the value will be removed.
+     * When the expired value is got, the key and the value will be removed.
      */
     fun get(key: Key): Value? {
         val index = indexOf(key)
-        if (key.isExpired()) {
+        val value = tbl[index]?.get(key) ?: return null
+        if (value.isExpired()) {
             ExpiresPool.remove(key)
             tbl[index]?.remove(key)
             return null
         }
-        return tbl[index]?.get(key)
+        return value
     }
 
     /**

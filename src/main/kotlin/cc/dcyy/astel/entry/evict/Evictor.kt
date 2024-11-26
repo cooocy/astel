@@ -3,7 +3,7 @@ package cc.dcyy.astel.entry.evict
 import cc.dcyy.astel.entry.Root
 
 /**
- * A evictor to evict the temporary keys and values in `ExpiresPool` and `Root`.
+ * An evictor to evict the temporary keys and values in `ExpiresPool` and `Root`.
  */
 object Evictor {
 
@@ -24,10 +24,12 @@ object Evictor {
         }
         val chosenKeys = ExpiresPool.shuffle().take(chosen)
         for (key in chosenKeys) {
-            if (key.isExpired()) {
-                ExpiresPool.remove(key)
-                Root.remove(key)
-            }
+            Root.get(key)
+            // No need to call under lines, Root.get() has removed the expired keys and values.
+//            if (value.isExpired()) {
+//                ExpiresPool.remove(key)
+//                Root.remove(key)
+//            }
         }
     }
 

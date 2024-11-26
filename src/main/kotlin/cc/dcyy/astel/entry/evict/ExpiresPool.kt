@@ -3,7 +3,7 @@ package cc.dcyy.astel.entry.evict
 import cc.dcyy.astel.entry.Key
 
 /**
- * All the temporary keys were put in this pool.
+ * All the keys of temporary values were put in this pool.
  * Scan this pool regularly to clean up the expired keys and values.
  */
 object ExpiresPool {

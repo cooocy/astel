@@ -1,22 +1,15 @@
 package cc.dcyy.astel.entry
 
-import java.time.Instant
-import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
-
-class Key {
+class Key private constructor() {
 
     var key: String = ""                    // The original key set by customer, unique.
         private set
     var hash: Int = 0                       // The hash code of this key, used to partition, not unique, maybe duplicated.
         private set
-    var expires: Instant = Instant.EPOCH    // Default value is `Instant.EPOCH`, means forever.
-        private set
 
     companion object {
-
         /**
-         * New a forever key.
+         * New a key.
          */
         fun new(k: String): Key {
             if (k.isBlank()) {
@@ -25,16 +18,6 @@ class Key {
             val key = Key()
             key.key = k
             key.hash = hash(k)
-            Instant.now().plus(12, ChronoUnit.DAYS)
-            return key
-        }
-
-        /**
-         * New a temporary key.
-         */
-        fun new(k: String, expire: Long, unit: TemporalUnit): Key {
-            val key = new(k)
-            key.expires = Instant.now().plus(expire, unit)
             return key
         }
 
@@ -45,23 +28,8 @@ class Key {
 
     }
 
-    /**
-     * Judge if the key is temporary, don't care if it has expired.
-     */
-    fun isTemporary(): Boolean {
-        return expires.isAfter(Instant.EPOCH)
-    }
-
-    /**
-     * Judge if the key is expired.
-     */
-    fun isExpired(): Boolean {
-        return expires != Instant.EPOCH && expires.isBefore(Instant.now())
-    }
-
-
     override fun toString(): String {
-        return "Key(key='$key', hash=$hash, expires=$expires)"
+        return "Key(key='$key', hash=$hash)"
     }
 
     /**
