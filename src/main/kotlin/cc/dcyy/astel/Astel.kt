@@ -73,6 +73,9 @@ object Astel {
         return tbl.sumOf { it?.size ?: 0 }
     }
 
+    /**
+     *  Clear all keys and values, and then fill Astel by the specified array.
+     */
     fun clearAndFill(newTbl: Array<HashMap<Key, Value>?>) {
         if (newTbl.size != TBL_SIZE) {
             throw AstelFillException("New tbl size is ${newTbl.size}, not eq to ${TBL_SIZE}.")

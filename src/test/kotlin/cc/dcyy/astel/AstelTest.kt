@@ -78,7 +78,7 @@ class AstelTest {
         Astel.clearAndFill(Astel.tbl.copyOf())
         assertEquals(2, Astel.size())
 
-        val ex = assertThrows(AstelFillException::class.java) { Astel.clearAndFill(arrayOf()) }
+        assertThrows(AstelFillException::class.java) { Astel.clearAndFill(arrayOf()) }
     }
 
 }
