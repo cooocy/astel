@@ -1,9 +1,11 @@
-package cc.dcyy.astel.entry
+package cc.dcyy.astel
 
-import cc.dcyy.astel.entry.evict.ExpiresPool
+import cc.dcyy.astel.entry.Key
+import cc.dcyy.astel.entry.Value
+import cc.dcyy.astel.evict.ExpiresPool
 import java.util.HashMap
 
-object Root {
+object Astel {
     private const val TBL_SIZE: Int = 16
     private val tbl = arrayOfNulls<HashMap<Key, Value>>(TBL_SIZE)
 
@@ -59,7 +61,7 @@ object Root {
     }
 
     /**
-     * Judge if the root contains this key.
+     * Judge if contains this key.
      */
     fun contains(key: Key): Boolean {
         val index = indexOf(key)

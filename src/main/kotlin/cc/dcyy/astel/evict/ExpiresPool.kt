@@ -1,4 +1,4 @@
-package cc.dcyy.astel.entry.evict
+package cc.dcyy.astel.evict
 
 import cc.dcyy.astel.entry.Key
 
