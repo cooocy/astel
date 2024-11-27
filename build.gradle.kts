@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.esotericsoftware:kryo:5.6.2")
     testImplementation(kotlin("test"))
 }
 

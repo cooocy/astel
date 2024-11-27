@@ -70,4 +70,15 @@ class AstelTest {
         assertEquals(0, Astel.size())
     }
 
+    @Test
+    fun testClearAndFill() {
+        Astel.clear()
+        Astel.put(Key.new("k1"), Strings.new("v1"))
+        Astel.put(Key.new("k2"), Strings.new("v2"))
+        Astel.clearAndFill(Astel.tbl.copyOf())
+        assertEquals(2, Astel.size())
+
+        val ex = assertThrows(AstelFillException::class.java) { Astel.clearAndFill(arrayOf()) }
+    }
+
 }

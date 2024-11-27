@@ -7,7 +7,7 @@ import java.util.HashMap
 
 object Astel {
     private const val TBL_SIZE: Int = 16
-    private val tbl = arrayOfNulls<HashMap<Key, Value>>(TBL_SIZE)
+    val tbl = arrayOfNulls<HashMap<Key, Value>>(TBL_SIZE)
 
     /**
      * Put the key and value.
@@ -40,9 +40,7 @@ object Astel {
      * Clear all keys and values.
      */
     fun clear() {
-        for (hm in tbl) {
-            hm?.clear()
-        }
+        tbl.fill(null)
     }
 
     /**
@@ -73,6 +71,17 @@ object Astel {
      */
     fun size(): Int {
         return tbl.sumOf { it?.size ?: 0 }
+    }
+
+    fun clearAndFill(newTbl: Array<HashMap<Key, Value>?>) {
+        if (newTbl.size != TBL_SIZE) {
+            throw AstelFillException("New tbl size is ${newTbl.size}, not eq to ${TBL_SIZE}.")
+        }
+        tbl.fill(null)
+        // TODO logger
+        for (i in 0 until tbl.size) {
+            tbl[i] = newTbl[i]
+        }
     }
 
     private fun indexOf(key: Key): Int {

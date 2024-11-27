@@ -12,6 +12,7 @@ class Strings private constructor() : Value {
     companion object {
         /**
          * New a forever value.
+         * TODO Remove method overload, use default args.
          */
         fun new(v: String): Strings {
             val strings = Strings()
