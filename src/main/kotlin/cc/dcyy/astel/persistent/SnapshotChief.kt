@@ -9,8 +9,12 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Instant
+import java.time.Duration
+import mu.KotlinLogging
 
 private val kryo = Kryo()
+private val L = KotlinLogging.logger {}
 
 // Only in this way can the following initialization code be executed.
 val neverRemove = run {
@@ -21,6 +25,7 @@ val neverRemove = run {
  * Serialize the Astel to local file system.
  */
 fun serialize(filePath: Path) {
+    val begin = Instant.now()
     Files.createDirectories(filePath.parent);
     if (Files.exists(filePath)) {
         Files.delete(filePath)
@@ -32,9 +37,11 @@ fun serialize(filePath: Path) {
                 kryo.writeObject(output, Astel.tbl)
             }
         }
+        val end = Instant.now()
+        val const = Duration.between(begin, end).toMillis()
+        L.info { "Serialize OK. Const: $const ms, File: $filePath" }
     } catch (e: Exception) {
-        // TODO logger
-        e.printStackTrace()
+        L.error { e }
     }
 }
 
@@ -43,6 +50,7 @@ fun serialize(filePath: Path) {
  * The original data in Astel will be removed.
  */
 fun deserialize(filePath: Path) {
+    val begin = Instant.now()
     if (!Files.exists(filePath)) {
         throw SnapshotNotFoundException("Snapshot file does not exist: $filePath")
     }
@@ -53,7 +61,10 @@ fun deserialize(filePath: Path) {
                 Astel.clearAndFill(tbl)
             }
         }
+        val end = Instant.now()
+        val const = Duration.between(begin, end).toMillis()
+        L.info { "Deserialize OK. Const: $const ms, File: $filePath" }
     } catch (e: Exception) {
-        e.printStackTrace()
+        L.error { e }
     }
 }

@@ -11,6 +11,10 @@ repositories {
 
 dependencies {
     implementation("com.esotericsoftware:kryo:5.6.2")
+    // facade and logback
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
+
     testImplementation(kotlin("test"))
 }
 

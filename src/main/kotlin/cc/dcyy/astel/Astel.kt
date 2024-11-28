@@ -4,10 +4,13 @@ import cc.dcyy.astel.entry.Key
 import cc.dcyy.astel.entry.Value
 import cc.dcyy.astel.evict.ExpiresPool
 import java.util.HashMap
+import mu.KotlinLogging
 
 object Astel {
-    private const val TBL_SIZE: Int = 16
     val tbl = arrayOfNulls<HashMap<Key, Value>>(TBL_SIZE)
+
+    private const val TBL_SIZE: Int = 16
+    private val L = KotlinLogging.logger {}
 
     /**
      * Put the key and value.
@@ -40,6 +43,7 @@ object Astel {
      * Clear all keys and values.
      */
     fun clear() {
+        L.info { "Astel cleared. Original size: ${size()}" }
         tbl.fill(null)
     }
 
@@ -77,14 +81,15 @@ object Astel {
      *  Clear all keys and values, and then fill Astel by the specified array.
      */
     fun clearAndFill(newTbl: Array<HashMap<Key, Value>?>) {
+        L.info { "Astel will clear and fill. Original size: ${size()}" }
         if (newTbl.size != TBL_SIZE) {
             throw AstelFillException("New tbl size is ${newTbl.size}, not eq to ${TBL_SIZE}.")
         }
         tbl.fill(null)
-        // TODO logger
         for (i in 0 until tbl.size) {
             tbl[i] = newTbl[i]
         }
+        L.info { "Astel filled. New size: ${size()}" }
     }
 
     private fun indexOf(key: Key): Int {
