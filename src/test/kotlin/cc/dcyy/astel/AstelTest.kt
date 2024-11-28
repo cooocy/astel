@@ -40,6 +40,15 @@ class AstelTest {
     }
 
     @Test
+    fun testRemoveIfExpired() {
+        Astel.clear()
+        Astel.put(Key.new("k"), Strings.new("v", -1, ChronoUnit.MICROS))
+        assertEquals(1, Astel.size())
+        Astel.removeIfExpired(Key.new("k"))
+        assertEquals(0, Astel.size())
+    }
+
+    @Test
     fun testContains() {
         Astel.clear()
         val k = Key.new("k")

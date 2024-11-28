@@ -72,4 +72,18 @@ class EvictorTest {
         assertEquals(1010000 - 10100, currSize)
     }
 
+    @Test
+    fun testFullEvictL() {
+        Astel.clear()
+        for (i in 0 until 100) {
+            Astel.put(Key.new("k$i"), Strings.new("v$i", -100, ChronoUnit.MICROS))
+        }
+        for (i in 0 until 10) {
+            Astel.put(Key.new("nk$i"), Strings.new("v$i"))
+        }
+        assertEquals(110, Astel.size())
+        Evictor.fullEvict()
+        assertEquals(10, Astel.size())
+    }
+
 }

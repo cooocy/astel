@@ -28,6 +28,13 @@ object ExpiresPool {
         return set.shuffled()
     }
 
+    /**
+     * Returns a copy: a `set` of expired keys.
+     */
+    fun copy(): List<Key> {
+        return set.toList()
+    }
+
     fun size(): Int {
         return set.size
     }

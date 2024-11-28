@@ -8,7 +8,6 @@ import mu.KotlinLogging
 
 object Astel {
     val tbl = arrayOfNulls<HashMap<Key, Value>>(TBL_SIZE)
-
     private const val TBL_SIZE: Int = 16
     private val L = KotlinLogging.logger {}
 
@@ -49,7 +48,7 @@ object Astel {
 
     /**
      * Get the value by its key if exists.
-     * When the expired value is got, the key and the value will be removed.
+     * When the expired value is got, the key and the value will be removed, and the key will be removed from ExpiresPool too.
      */
     fun get(key: Key): Value? {
         val index = indexOf(key)
@@ -60,6 +59,19 @@ object Astel {
             return null
         }
         return value
+    }
+
+    /**
+     * Remove the key and value if expired.
+     * The key will be removed from ExpiresPool too.
+     */
+    fun removeIfExpired(key: Key) {
+        val index = indexOf(key)
+        val value = tbl[index]?.get(key) ?: return
+        if (value.isExpired()) {
+            ExpiresPool.remove(key)
+            tbl[index]?.remove(key)
+        }
     }
 
     /**

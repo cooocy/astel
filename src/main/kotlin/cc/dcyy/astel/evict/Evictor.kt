@@ -24,12 +24,16 @@ object Evictor {
         }
         val chosenKeys = ExpiresPool.shuffle().take(chosen)
         for (key in chosenKeys) {
-            Astel.get(key)
-            // No need to call under lines, Astel.get() has removed the expired keys and values.
-//            if (value.isExpired()) {
-//                ExpiresPool.remove(key)
-//                Astel.remove(key)
-//            }
+            Astel.removeIfExpired(key)
+        }
+    }
+
+    /**
+     * Full evict expired keys and values.
+     */
+    fun fullEvict() {
+        for (key in ExpiresPool.copy()) {
+            Astel.removeIfExpired(key)
         }
     }
 

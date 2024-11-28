@@ -1,3 +1,6 @@
 persistent:
   snapshot:
     path: persistent/snapshot
+
+memory:
+  threshold: 85
