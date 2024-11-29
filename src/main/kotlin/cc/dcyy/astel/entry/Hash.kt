@@ -1,4 +1,4 @@
 package cc.dcyy.astel.entry
 
-abstract class Hash : Value {
+abstract class Hash : Value() {
 }

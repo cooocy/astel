@@ -1,3 +1,3 @@
 package cc.dcyy.astel.entry
 
-abstract class Set : Value {}
+abstract class Set : Value() {}

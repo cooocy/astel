@@ -10,7 +10,6 @@ class StringsTest {
     @Test
     fun testNew() {
         val v1 = Strings.new("v")
-        assertEquals(Value.FOREVER, v1.expires)
         val v2 = Strings.new("v2", 20, ChronoUnit.HOURS)
         assertTrue(v2.expires.isAfter(Instant.now()))
     }

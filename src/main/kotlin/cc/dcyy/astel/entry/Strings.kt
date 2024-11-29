@@ -3,9 +3,8 @@ package cc.dcyy.astel.entry
 import java.time.Instant
 import java.time.temporal.TemporalUnit
 
-class Strings private constructor() : Value {
-    override var expires: Instant = Value.FOREVER
-        private set
+class Strings private constructor() : Value() {
+
     var value: String = ""
         private set
 
