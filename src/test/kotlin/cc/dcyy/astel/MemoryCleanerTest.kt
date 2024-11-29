@@ -7,7 +7,7 @@ class MemoryCleanerTest {
 
     @Test
     fun testClean() {
-        MemoryCleaner.clean(0)
+        MemoryCleaner.clean(MemoryConfigs(0))
     }
 
 }

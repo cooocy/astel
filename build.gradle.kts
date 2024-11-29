@@ -14,7 +14,7 @@ dependencies {
     // facade and logback
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.12")
-
+    implementation("org.yaml:snakeyaml:2.3")
     testImplementation(kotlin("test"))
 }
 

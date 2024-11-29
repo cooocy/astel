@@ -5,6 +5,8 @@ import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
 
+data class MemoryConfigs(val threshold: Int)
+
 object MemoryCleaner {
 
     val L = KotlinLogging.logger {}
@@ -12,11 +14,11 @@ object MemoryCleaner {
     /**
      * Clean all temporary keys and values.
      */
-    fun clean(threshold: Int) {
+    fun clean(c: MemoryConfigs) {
         val before = memory()
         val usedPercentBefore = before.used / before.total
-        if (usedPercentBefore < threshold) {
-            L.info { "No need to clean. Current memory used: ${usedPercentBefore}%, threshold: $threshold" }
+        if (usedPercentBefore < c.threshold) {
+            L.info { "No need to clean. Current memory used: ${usedPercentBefore}%, threshold: $c.threshold" }
             return
         }
         val usedMbBefore = before.used / (1014 * 1024)
