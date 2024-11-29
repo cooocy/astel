@@ -3,6 +3,9 @@ package cc.dcyy.astel.entry
 import java.time.Instant
 import java.time.temporal.TemporalUnit
 
+/**
+ * A String value.
+ */
 class Strings private constructor() : Value() {
 
     var value: String = ""
