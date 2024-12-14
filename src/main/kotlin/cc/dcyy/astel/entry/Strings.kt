@@ -8,7 +8,7 @@ import java.time.temporal.TemporalUnit
  */
 class Strings private constructor() : Value() {
 
-    var value: String = ""
+    var v: String = ""
         private set
 
     companion object {
@@ -17,7 +17,7 @@ class Strings private constructor() : Value() {
          */
         fun new(v: String): Strings {
             val strings = Strings()
-            strings.value = v
+            strings.v = v
             return strings
         }
 
@@ -26,7 +26,7 @@ class Strings private constructor() : Value() {
          */
         fun new(v: String, expire: Long, unit: TemporalUnit): Strings {
             val strings = Strings()
-            strings.value = v
+            strings.v = v
             strings.expires = Instant.now().plus(expire, unit)
             return strings
         }

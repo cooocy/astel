@@ -1,9 +1,16 @@
 package cc.dcyy.astel
 
-abstract class AstelException(message: String) : RuntimeException(message)
+const val OK = 0
+const val UNEXPECTED = 99
 
-class AstelFillException(message: String) : AstelException(message)
+abstract class AstelException(val code: Int, override val message: String) : RuntimeException(message)
 
-class SnapshotNotFoundException(message: String) : AstelException(message)
+class AstelFillException(message: String) : AstelException(1, message)
 
-class CommandErrorException(message: String) : AstelException(message)
+class SnapshotNotFoundException(message: String) : AstelException(2, message)
+
+class UnknownCommandException() : AstelException(3, "Unknown command.")
+
+class CommandArgsErrException() : AstelException(4, "Command argument error.")
+
+class ValueTypeNotMatchException() : AstelException(5, "Value type not match.")

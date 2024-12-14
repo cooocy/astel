@@ -7,7 +7,7 @@ import java.time.temporal.TemporalUnit
  * A List value, its elements can be duplicated but not null.
  */
 class Listl private constructor() : Value() {
-    val value: ArrayDeque<Any> = ArrayDeque()
+    val v: ArrayDeque<Any> = ArrayDeque()
 
     companion object {
 
@@ -16,7 +16,7 @@ class Listl private constructor() : Value() {
          */
         fun new(vararg elements: Any): Listl {
             val l = Listl()
-            l.value.addAll(elements)
+            l.v.addAll(elements)
             return l
         }
 
@@ -25,7 +25,7 @@ class Listl private constructor() : Value() {
          */
         fun new(expire: Long, unit: TemporalUnit, vararg elements: Any): Listl {
             val l = Listl()
-            l.value.addAll(elements)
+            l.v.addAll(elements)
             l.expires = Instant.now().plus(expire, unit)
             return l
         }
@@ -35,21 +35,21 @@ class Listl private constructor() : Value() {
      * Returns the element at the specified index in the list.
      */
     fun get(index: Int): Any? {
-        return value[index]
+        return v[index]
     }
 
     /**
      * Removes an element at the specified index from the list.
      */
     fun removeAt(index: Int) {
-        value.removeAt(index)
+        v.removeAt(index)
     }
 
     /**
      * Prepends the specified element to this list.
      */
     fun leftPush(element: Any) {
-        value.addFirst(element)
+        v.addFirst(element)
     }
 
     /**
@@ -57,14 +57,14 @@ class Listl private constructor() : Value() {
      * If this list is empty, returns null.
      */
     fun leftPop(): Any? {
-        return if (value.isEmpty()) null else value.removeFirst()
+        return if (v.isEmpty()) null else v.removeFirst()
     }
 
     /**
      * Appends the specified element to this list.
      */
     fun rightPush(element: Any) {
-        value.addLast(element)
+        v.addLast(element)
     }
 
     /**
@@ -72,7 +72,7 @@ class Listl private constructor() : Value() {
      * If this list is empty, returns null.
      */
     fun rightPop(): Any? {
-        return if (value.isEmpty()) null else value.removeLast()
+        return if (v.isEmpty()) null else v.removeLast()
     }
 
     /**
@@ -80,14 +80,14 @@ class Listl private constructor() : Value() {
      * [fromIndex, toIndex)
      */
     fun range(fromIndex: Int, toIndex: Int): List<Any> {
-        return value.subList(fromIndex, toIndex)
+        return v.subList(fromIndex, toIndex)
     }
 
     /**
      * Returns size of this list.
      */
     fun size(): Int {
-        return value.size
+        return v.size
     }
 
 }

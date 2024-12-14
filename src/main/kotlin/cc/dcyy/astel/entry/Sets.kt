@@ -7,7 +7,7 @@ import java.time.temporal.TemporalUnit
  * A Set value, its elements can not be duplicated and not null.
  */
 class Sets private constructor() : Value() {
-    val value: HashSet<Any> = HashSet()
+    val v: HashSet<Any> = HashSet()
 
     companion object {
         /**
@@ -15,7 +15,7 @@ class Sets private constructor() : Value() {
          */
         fun new(vararg elements: Any): Sets {
             var s = Sets()
-            elements.forEach { e -> s.value.add(e) }
+            elements.forEach { e -> s.v.add(e) }
             return s
         }
 
@@ -24,7 +24,7 @@ class Sets private constructor() : Value() {
          */
         fun new(expire: Long, unit: TemporalUnit, vararg elements: Any): Sets {
             val s = Sets()
-            elements.forEach { e -> s.value.add(e) }
+            elements.forEach { e -> s.v.add(e) }
             s.expires = Instant.now().plus(expire, unit)
             return s
         }
@@ -33,34 +33,34 @@ class Sets private constructor() : Value() {
     /**
      * Returns size of this set.
      */
-    fun size() = value.size
+    fun size() = v.size
 
     /**
      * Returns true if this set contains the specified element.
      */
     fun contains(element: Any): Boolean {
-        return value.contains(element)
+        return v.contains(element)
     }
 
     /**
      * Removes the specified element from this set if it is present.
      */
     fun remove(element: Any) {
-        value.remove(element)
+        v.remove(element)
     }
 
     /**
      * Returns a set containing all elements that are contained by both this set and the specified set.
      */
     fun intersect(other: Sets): Set<Any> {
-        return HashSet(value.intersect(other.value))
+        return HashSet(v.intersect(other.v))
     }
 
     /**
      * Returns a set containing all distinct elements from both sets.
      */
     fun union(other: Sets): Set<Any> {
-        return HashSet(value.union(other.value))
+        return HashSet(v.union(other.v))
     }
 
 }
