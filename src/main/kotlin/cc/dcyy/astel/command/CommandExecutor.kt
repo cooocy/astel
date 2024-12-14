@@ -9,6 +9,7 @@ import cc.dcyy.astel.entry.Strings
 object CommandExecutor {
 
     fun execute(input: String): Response {
+        // TODO Handler Exception.
         val request = parseRequest(input)
         return when (request.command) {
             set -> doSet(request)
