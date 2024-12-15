@@ -1,8 +1,9 @@
 package cc.dcyy.astel.server
 
+import cc.dcyy.astel.server.handler.inbound.AdminInboundHandler
 import cc.dcyy.astel.server.handler.inbound.AstelInboundHandler
 import cc.dcyy.astel.server.handler.inbound.RecordRequestInboundHandler
-import cc.dcyy.astel.server.message.MessageCodec
+import cc.dcyy.astel.server.protocol.MessageCodec
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelInitializer
@@ -21,12 +22,12 @@ fun main() {
         serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel::class.java).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(object : ChannelInitializer<SocketChannel>() {
             @Throws(Exception::class)
             override fun initChannel(socketChannel: SocketChannel) {
-                // The Inbound Order: DecodeHandler > RecordRequestHandler > AstelHandler
+                // socketChannel.pipeline().addLast(LengthFieldPrepender())
                 socketChannel.pipeline().addLast(MessageCodec())
                 socketChannel.pipeline().addLast(RecordRequestInboundHandler())
-                socketChannel.pipeline().addLast(astelWorkerGroup, AstelInboundHandler())
+                socketChannel.pipeline().addLast(AstelInboundHandler())
+                socketChannel.pipeline().addLast(AdminInboundHandler())
 
-                // The Outbound Order:
             }
         })
         val channelFuture: ChannelFuture = serverBootstrap.bind(8080).sync()

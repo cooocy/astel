@@ -1,12 +1,14 @@
 package cc.dcyy.astel
 
+import com.fasterxml.jackson.databind.ObjectMapper
+
 /**
  * The JVM memory info.
  * Xms(min), Xmx(max).
  * If `Xms == Xmx`, total == max.
  */
 data class Memory(
-    val total: Long, val free: Long, val max: Long, val used: Long = total - free
+    val total: Long, val free: Long, val max: Long, val used: Long = total - free,
 )
 
 
@@ -16,4 +18,13 @@ data class Memory(
 fun memory(): Memory {
     val runtime = Runtime.getRuntime()
     return Memory(runtime.totalMemory(), runtime.freeMemory(), runtime.maxMemory())
+}
+
+object Json {
+    private val objectMapper = ObjectMapper()
+
+    fun toJson(any: Any): String {
+        return objectMapper.writeValueAsString(any)
+    }
+
 }

@@ -1,24 +1,26 @@
 package cc.dcyy.astel.server.handler.inbound
 
 import cc.dcyy.astel.entrance.CommandExecutor
-import cc.dcyy.astel.server.message.Message
-import cc.dcyy.astel.server.message.MessageType.*
+import cc.dcyy.astel.server.protocol.AstelRequestMessage
+import cc.dcyy.astel.server.protocol.AstelResponseMessage
 import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelInboundHandlerAdapter
+import io.netty.channel.SimpleChannelInboundHandler
 import mu.KotlinLogging
 
-class AstelInboundHandler : ChannelInboundHandlerAdapter() {
+/**
+ * Handler the AstelRequestMessage.
+ * astelRequestMessage > | This | > astelResponseMessage
+ */
+class AstelInboundHandler : SimpleChannelInboundHandler<AstelRequestMessage>() {
 
     private val L = KotlinLogging.logger {}
 
-    override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
+    override fun channelRead0(ctx: ChannelHandlerContext?, msg: AstelRequestMessage?) {
         L.debug { "AstelInboundHandler..." }
-        val message = msg as Message
-        val response = when (message.type) {
-            Auth -> TODO()
-            Command -> CommandExecutor.execute(message.content)
+        if (ctx != null && msg != null) {
+            val astelResponse = CommandExecutor.execute(msg.content)
+            ctx.writeAndFlush(AstelResponseMessage(astelResponse.code, astelResponse.content))
         }
-        ctx.writeAndFlush(response)
     }
 
 }

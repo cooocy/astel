@@ -14,7 +14,7 @@ object CommandExecutor {
 
     private val L = KotlinLogging.logger {}
 
-    fun execute(input: String): Response {
+    fun execute(input: String): AstelResponse {
         try {
             val request = parseRequest(input)
             return when (request.command) {
@@ -33,41 +33,41 @@ object CommandExecutor {
             }
         } catch (e: AstelException) {
             L.error { "Execute catch expected exception. $e" }
-            return Response.err(e)
+            return AstelResponse.err(e)
         } catch (e: Exception) {
             L.error { "Execute catch unexpected exception. $e" }
-            return Response.err(e)
+            return AstelResponse.err(e)
         }
     }
 
-    private fun parseRequest(input: String): Request {
+    private fun parseRequest(input: String): AstelRequest {
         val formattedInput = input.replace(" +".toRegex(), " ")
         val parts = formattedInput.split(" ")
         val cmd = Command.entries.find { it.name == parts[0] } ?: throw UnknownCommandException()
-        return Request(cmd, parts.drop(1))
+        return AstelRequest(cmd, parts.drop(1))
     }
 
 
-    private fun doSet(request: Request): Response {
-        if (request.args.size != 2) {
+    private fun doSet(astelRequest: AstelRequest): AstelResponse {
+        if (astelRequest.args.size != 2) {
             throw CommandArgsErrException()
         }
-        Astel.put(Key.new(request.args[0] as String), Strings.new(request.args[1] as String))
-        return Response.ok("Done.")
+        Astel.put(Key.new(astelRequest.args[0] as String), Strings.new(astelRequest.args[1] as String))
+        return AstelResponse.ok("Done.")
     }
 
-    private fun doGet(request: Request): Response {
-        if (request.args.size != 1) {
+    private fun doGet(astelRequest: AstelRequest): AstelResponse {
+        if (astelRequest.args.size != 1) {
             throw CommandArgsErrException()
         }
-        val value = Astel.get(Key.new(request.args[0] as String))
+        val value = Astel.get(Key.new(astelRequest.args[0] as String))
         if (value == null) {
-            return Response.ok("")
+            return AstelResponse.ok("")
         }
         if (value !is Strings) {
             throw ValueTypeNotMatchException()
         }
-        return Response.ok(value.v)
+        return AstelResponse.ok(value.v)
     }
 
 }

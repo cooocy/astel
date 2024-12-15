@@ -9,22 +9,25 @@ import cc.dcyy.astel.UNEXPECTED
  */
 
 /**
- * The request.
+ * The astel request.
  */
-class Request(val command: Command, val args: List<Any>)
+class AstelRequest(val command: Command, val args: List<Any>)
 
-class Response(val code: Int, val content: Any) {
+/**
+ * The astel response.
+ */
+class AstelResponse(val code: Int, val content: Any) {
     companion object {
-        fun ok(content: Any): Response {
-            return Response(OK, content)
+        fun ok(content: Any): AstelResponse {
+            return AstelResponse(OK, content)
         }
 
-        fun err(ae: AstelException): Response {
-            return Response(ae.code, ae.message)
+        fun err(ae: AstelException): AstelResponse {
+            return AstelResponse(ae.code, ae.message)
         }
 
-        fun err(e: Exception): Response {
-            return Response(UNEXPECTED, e.message ?: "Unknown exception message.")
+        fun err(e: Exception): AstelResponse {
+            return AstelResponse(UNEXPECTED, e.message ?: "Unknown exception message.")
         }
     }
 }
