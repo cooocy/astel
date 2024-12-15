@@ -1,4 +1,4 @@
-package cc.dcyy.astel.core
+package cc.dcyy.astel
 
 const val OK = 0
 const val UNEXPECTED = 99

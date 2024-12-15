@@ -1,5 +1,6 @@
 package cc.dcyy.astel.core
 
+import cc.dcyy.astel.AstelFillException
 import cc.dcyy.astel.core.entry.Key
 import cc.dcyy.astel.core.entry.Value
 import cc.dcyy.astel.core.evict.ExpiresPool
