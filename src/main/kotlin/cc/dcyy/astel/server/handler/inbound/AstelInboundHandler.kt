@@ -1,6 +1,6 @@
 package cc.dcyy.astel.server.handler.inbound
 
-import cc.dcyy.astel.entrance.CommandExecutor
+import cc.dcyy.astel.core.entrance.CommandExecutor
 import cc.dcyy.astel.server.protocol.AstelRequestMessage
 import cc.dcyy.astel.server.protocol.AstelResponseMessage
 import io.netty.channel.ChannelHandlerContext

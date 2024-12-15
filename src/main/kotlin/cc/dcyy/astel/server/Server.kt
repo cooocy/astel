@@ -20,16 +20,20 @@ fun main() {
     val astelWorkerGroup = NioEventLoopGroup()
     try {
         val serverBootstrap = ServerBootstrap()
-        serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel::class.java).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(object : ChannelInitializer<SocketChannel>() {
-            @Throws(Exception::class)
-            override fun initChannel(socketChannel: SocketChannel) {
-                socketChannel.pipeline().addLast(LengthFieldBasedFrameDecoder(4 * 1024 * 1024, 8, 4, 0, 0))
-                socketChannel.pipeline().addLast(MessageCodec())
-                socketChannel.pipeline().addLast(RecordRequestInboundHandler())
-                socketChannel.pipeline().addLast(AstelInboundHandler())
-                socketChannel.pipeline().addLast(AdminInboundHandler())
-            }
-        })
+        serverBootstrap.group(bossGroup, workerGroup)
+            .channel(NioServerSocketChannel::class.java)
+            .option(ChannelOption.SO_BACKLOG, 128)
+            .childOption(ChannelOption.SO_KEEPALIVE, true)
+            .childHandler(object : ChannelInitializer<SocketChannel>() {
+                @Throws(Exception::class)
+                override fun initChannel(socketChannel: SocketChannel) {
+                    socketChannel.pipeline().addLast(LengthFieldBasedFrameDecoder(4 * 1024 * 1024, 8, 4, 0, 0))
+                    socketChannel.pipeline().addLast(MessageCodec())
+                    socketChannel.pipeline().addLast(RecordRequestInboundHandler())
+                    socketChannel.pipeline().addLast(AstelInboundHandler())
+                    socketChannel.pipeline().addLast(AdminInboundHandler())
+                }
+            })
         val channelFuture: ChannelFuture = serverBootstrap.bind(8080).sync()
         channelFuture.channel().closeFuture().sync()
     } finally {
