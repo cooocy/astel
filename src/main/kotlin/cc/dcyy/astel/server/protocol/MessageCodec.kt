@@ -1,6 +1,9 @@
 package cc.dcyy.astel.server.protocol
 
+import cc.dcyy.astel.IllegalMessageServiceError
 import cc.dcyy.astel.Json
+import cc.dcyy.astel.SomeObjectNullServiceError
+import cc.dcyy.astel.UnexpectedServiceError
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageCodec
@@ -19,7 +22,7 @@ import mu.KotlinLogging
  * ** 1Byte, 1=common, 2=json
  *
  * - Message Scope:
- * ** 1Byte, 1=Admin, 2=Astel
+ * ** 1Byte, 0=Meaningless, 1=Admin, 2=Astel
  *
  * - Content Length:
  * ** 4Bytes.
@@ -33,25 +36,30 @@ import mu.KotlinLogging
  */
 class MessageCodec : ByteToMessageCodec<Message>() {
 
-    private val magicNum = "Astel"
-    private val version = 1
-    private val serializationCommon = 1
-    private val serializationJson = 2
-    private val scopeAdmin = 1
-    private val scopeAstel = 2
+    companion object {
+        private const val MAGIC_NUM = "Astel"
+        private const val VERSION = 1
+        private const val SERIALIZATION_COMMON = 1
+        private const val SERIALIZATION_JSON = 2
+        private const val SCOPE_MEANINGLESS = 0
+        private const val SCOPE_ADMIN = 1
+        private const val SCOPE_ASTEL = 2
+    }
 
     private val L = KotlinLogging.logger {}
 
     override fun encode(ctx: ChannelHandlerContext?, msg: Message?, out: ByteBuf?) {
         if (ctx == null || msg == null || out == null) {
-            TODO("Not yet implemented")
+            ctx!!.writeAndFlush(SomeObjectNullServiceError)
+            return
         }
-        out.writeBytes(magicNum.toByteArray())
-        out.writeByte(version)
-        out.writeByte(serializationJson)
+        out.writeBytes(MAGIC_NUM.toByteArray())
+        out.writeByte(VERSION)
+        out.writeByte(SERIALIZATION_JSON)
         val scope = when (msg) {
-            is AdminResponseMessage -> scopeAdmin
-            is AstelResponseMessage -> scopeAstel
+            is AdminResponseMessage -> SCOPE_ADMIN
+            is AstelResponseMessage -> SCOPE_ASTEL
+            is ServiceErrorResponseMessage -> SCOPE_MEANINGLESS
             else -> {
                 TODO("Not yet implemented")
             }
@@ -60,29 +68,37 @@ class MessageCodec : ByteToMessageCodec<Message>() {
         val messageBytes = Json.toJson(msg).encodeToByteArray()
         out.writeInt(messageBytes.size)
         out.writeBytes(messageBytes)
-        L.debug { "Encoded message success." }
     }
 
     override fun decode(ctx: ChannelHandlerContext?, inByteBuf: ByteBuf?, out: MutableList<Any?>?) {
-        if (inByteBuf == null) {
-            TODO("Not yet implemented")
+        try {
+            if (ctx == null || inByteBuf == null || out == null) {
+                out!!.add(SomeObjectNullServiceError)
+                return
+            }
+            val magicNumBytes = ByteArray(5)
+            inByteBuf.readBytes(magicNumBytes)
+            val magicNum = String(magicNumBytes, Charsets.UTF_8)
+            val version = inByteBuf.readByte().toInt()
+            val serializationFormat = inByteBuf.readByte().toInt()
+            val messageScope = inByteBuf.readByte().toInt()
+            val contentLength = inByteBuf.readInt()
+            val contentBytes = ByteArray(contentLength)
+            inByteBuf.readBytes(contentBytes)
+            val content = String(contentBytes, Charsets.UTF_8)
+
+            if (magicNum != MAGIC_NUM || version != VERSION || serializationFormat != SERIALIZATION_COMMON || (messageScope != SCOPE_ADMIN && messageScope != SCOPE_ASTEL)) {
+                L.warn { "Illegal message." }
+                out.add(IllegalMessageServiceError)
+                return
+            }
+
+            val message = if (messageScope == SCOPE_ADMIN) AdminRequestMessage(content) else AstelRequestMessage(content)
+            out.add(message)
+        } catch (e: Exception) {
+            L.error { "Encoding catch exception. $e" }
+            out!!.add(UnexpectedServiceError)
         }
-        val magicNumBytes = ByteArray(5)
-        inByteBuf.readBytes(magicNumBytes)
-        val magicNum = String(magicNumBytes, Charsets.UTF_8)
-        val version = inByteBuf.readByte().toInt()
-        val serializationFormat = inByteBuf.readByte().toInt()
-        val messageScope = inByteBuf.readByte().toInt()
-        val contentLength = inByteBuf.readInt()
-        val contentBytes = ByteArray(contentLength)
-        inByteBuf.readBytes(contentBytes)
-        val content = String(contentBytes, Charsets.UTF_8)
-
-        // TODO Check Message.
-
-        val message = if (messageScope == scopeAdmin) AdminRequestMessage(content) else AstelRequestMessage(content)
-        L.debug { "Decoded message success. $message" }
-        out?.add(message)
     }
 
 }

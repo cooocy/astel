@@ -15,7 +15,6 @@ class AdminInboundHandler : SimpleChannelInboundHandler<AdminRequestMessage>() {
     private val L = KotlinLogging.logger {}
 
     override fun channelRead0(ctx: ChannelHandlerContext?, msg: AdminRequestMessage?) {
-        L.debug { "AdminInboundHandler" }
         ctx?.writeAndFlush(AdminResponseMessage("Login OK."))
     }
 

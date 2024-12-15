@@ -3,6 +3,7 @@ package cc.dcyy.astel.server
 import cc.dcyy.astel.server.handler.inbound.AdminInboundHandler
 import cc.dcyy.astel.server.handler.inbound.AstelInboundHandler
 import cc.dcyy.astel.server.handler.inbound.RecordRequestInboundHandler
+import cc.dcyy.astel.server.handler.inbound.ServiceErrorInboundHandler
 import cc.dcyy.astel.server.protocol.MessageCodec
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
@@ -29,6 +30,7 @@ fun main() {
                 override fun initChannel(socketChannel: SocketChannel) {
                     socketChannel.pipeline().addLast(LengthFieldBasedFrameDecoder(4 * 1024 * 1024, 8, 4, 0, 0))
                     socketChannel.pipeline().addLast(MessageCodec())
+                    socketChannel.pipeline().addLast(ServiceErrorInboundHandler())
                     socketChannel.pipeline().addLast(RecordRequestInboundHandler())
                     socketChannel.pipeline().addLast(AstelInboundHandler())
                     socketChannel.pipeline().addLast(AdminInboundHandler())

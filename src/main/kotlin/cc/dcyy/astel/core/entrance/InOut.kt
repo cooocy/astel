@@ -2,7 +2,7 @@ package cc.dcyy.astel.core.entrance
 
 import cc.dcyy.astel.AstelException
 import cc.dcyy.astel.OK
-import cc.dcyy.astel.UNEXPECTED
+import cc.dcyy.astel.ASTEL_UNEXPECTED
 
 /**
  * The input(Request) and the output(Response).
@@ -27,7 +27,7 @@ class AstelResponse(val code: Int, val content: Any) {
         }
 
         fun err(e: Exception): AstelResponse {
-            return AstelResponse(UNEXPECTED, e.message ?: "Unknown exception message.")
+            return AstelResponse(ASTEL_UNEXPECTED, e.message ?: "[AstelException] Unknown exception message.")
         }
     }
 }

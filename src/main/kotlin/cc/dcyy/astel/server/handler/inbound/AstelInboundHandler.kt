@@ -16,7 +16,6 @@ class AstelInboundHandler : SimpleChannelInboundHandler<AstelRequestMessage>() {
     private val L = KotlinLogging.logger {}
 
     override fun channelRead0(ctx: ChannelHandlerContext?, msg: AstelRequestMessage?) {
-        L.debug { "AstelInboundHandler..." }
         if (ctx != null && msg != null) {
             val astelResponse = CommandExecutor.execute(msg.content)
             ctx.writeAndFlush(AstelResponseMessage(astelResponse.code, astelResponse.content))
