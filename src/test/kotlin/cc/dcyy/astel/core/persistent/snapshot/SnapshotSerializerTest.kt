@@ -1,6 +1,6 @@
 package cc.dcyy.astel.core.persistent.snapshot
 
-import cc.dcyy.astel.core.Astel
+import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.core.entry.Key
 import cc.dcyy.astel.core.entry.Strings
 import cc.dcyy.astel.core.persistent.deserialize

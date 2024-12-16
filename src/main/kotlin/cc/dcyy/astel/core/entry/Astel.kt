@@ -1,8 +1,6 @@
-package cc.dcyy.astel.core
+package cc.dcyy.astel.core.entry
 
 import cc.dcyy.astel.AstelFillException
-import cc.dcyy.astel.core.entry.Key
-import cc.dcyy.astel.core.entry.Value
 import cc.dcyy.astel.core.evict.ExpiresPool
 import java.util.HashMap
 import mu.KotlinLogging

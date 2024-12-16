@@ -1,6 +1,6 @@
 package cc.dcyy.astel.core.entrance
 
-import cc.dcyy.astel.core.Astel
+import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.CommandArgsErrException
 import cc.dcyy.astel.UnknownCommandException
 import cc.dcyy.astel.ValueTypeNotMatchException

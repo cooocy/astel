@@ -1,6 +1,6 @@
 package cc.dcyy.astel.core.persistent
 
-import cc.dcyy.astel.core.Astel
+import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.SnapshotNotFoundException
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input

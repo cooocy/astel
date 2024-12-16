@@ -1,6 +1,6 @@
 package cc.dcyy.astel.core.evict
 
-import cc.dcyy.astel.core.Astel
+import cc.dcyy.astel.core.entry.Astel
 
 /**
  * An evictor to evict the temporary keys and values in `ExpiresPool` and `Astel`.

@@ -1,7 +1,7 @@
 package cc.dcyy.astel.core.evict
 
 import cc.dcyy.astel.core.entry.Key
-import cc.dcyy.astel.core.Astel
+import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.core.entry.Strings
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
