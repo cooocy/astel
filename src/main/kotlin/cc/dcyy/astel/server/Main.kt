@@ -26,9 +26,9 @@ fun main() {
     L.info { "Astel Server Starting..." }
 
     val configurations = loadConfig("config.yaml")
-    AstelInitializer.init(configurations)
+    AstelInitializer.init(configurations.persistent!!)
 
-    Runtime.getRuntime().addShutdownHook(Thread { AstelShutdown.shutdown(configurations) })
+    Runtime.getRuntime().addShutdownHook(Thread { AstelShutdown.shutdown(configurations.persistent!!) })
 
     // The server only has one NioServerSocketChannel, no need to specify the boos group thread(1)
     val bossGroup = NioEventLoopGroup(1)
@@ -38,16 +38,16 @@ fun main() {
     try {
         val serverBootstrap = ServerBootstrap()
         serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel::class.java).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(object : ChannelInitializer<SocketChannel>() {
-                @Throws(Exception::class)
-                override fun initChannel(socketChannel: SocketChannel) {
-                    socketChannel.pipeline().addLast(LengthFieldBasedFrameDecoder(4 * 1024 * 1024, 8, 4, 0, 0))
-                    socketChannel.pipeline().addLast(MessageCodec())
-                    socketChannel.pipeline().addLast(ServiceErrorInboundHandler())
-                    socketChannel.pipeline().addLast(RecordRequestInboundHandler())
-                    socketChannel.pipeline().addLast(astelWorkerGroup, AstelInboundHandler())
-                    socketChannel.pipeline().addLast(AdminInboundHandler())
-                }
-            })
+            @Throws(Exception::class)
+            override fun initChannel(socketChannel: SocketChannel) {
+                socketChannel.pipeline().addLast(LengthFieldBasedFrameDecoder(4 * 1024 * 1024, 8, 4, 0, 0))
+                socketChannel.pipeline().addLast(MessageCodec())
+                socketChannel.pipeline().addLast(ServiceErrorInboundHandler())
+                socketChannel.pipeline().addLast(RecordRequestInboundHandler())
+                socketChannel.pipeline().addLast(astelWorkerGroup, AstelInboundHandler())
+                socketChannel.pipeline().addLast(AdminInboundHandler())
+            }
+        })
         val channelFuture: ChannelFuture = serverBootstrap.bind(8080).sync()
         L.info { "Astel Server Started." }
         L.info { "=================================================" }
