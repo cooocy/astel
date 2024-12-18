@@ -57,6 +57,7 @@ fun main() {
         L.info { "=================================================" }
         channelFuture.channel().closeFuture().sync()
     } finally {
+        // TODO Can not be executed.
         bossGroup.shutdownGracefully()
         workerGroup.shutdownGracefully()
         astelWorkerGroup.shutdownGracefully()

@@ -5,6 +5,8 @@ import cc.dcyy.astel.core.AstelInitializer
 import cc.dcyy.astel.core.AstelShutdown
 import cc.dcyy.astel.core.MemoryCleaner
 import cc.dcyy.astel.core.persistent.SnapshotChief
+import io.netty.channel.DefaultEventLoop
+import io.netty.channel.nio.NioEventLoop
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
 import java.nio.file.Paths
@@ -45,7 +47,7 @@ class Setup(val configurations: Configurations) {
      * Register all shutdown hooks.
      */
     fun registerShutdown() {
-        Runtime.getRuntime().addShutdownHook(Thread { AstelShutdown.shutdown(configurations.persistent!!) })
+        Runtime.getRuntime().addShutdownHook(Thread({ AstelShutdown.shutdown(configurations.persistent!!) }, "server-shutdown"))
     }
 
 }
