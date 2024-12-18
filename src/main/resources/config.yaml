@@ -1,6 +1,10 @@
 persistent:
   snapshot:
     path: persistent/snapshot
+    every: 60    # every 60s do persistent
 
 memory:
   threshold: 85
+
+server:
+  port: 6297

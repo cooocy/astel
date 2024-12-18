@@ -20,16 +20,22 @@ import mu.KotlinLogging
 
 private val L = KotlinLogging.logger {}
 
-
 fun main() {
     L.info { "=================================================" }
     L.info { "Astel Server Starting..." }
 
     val configurations = loadConfig("config.yaml")
+
+    // Astel init.
     AstelInitializer.init(configurations.persistent!!)
 
+    // Register scheduled task.
+    Schedule.schedule(configurations.persistent!!)
+
+    // Register shutdown hook.
     Runtime.getRuntime().addShutdownHook(Thread { AstelShutdown.shutdown(configurations.persistent!!) })
 
+    // Netty init.
     // The server only has one NioServerSocketChannel, no need to specify the boos group thread(1)
     val bossGroup = NioEventLoopGroup(1)
     val workerGroup = NioEventLoopGroup()
@@ -48,8 +54,9 @@ fun main() {
                 socketChannel.pipeline().addLast(AdminInboundHandler())
             }
         })
-        val channelFuture: ChannelFuture = serverBootstrap.bind(8080).sync()
-        L.info { "Astel Server Started." }
+        val port = configurations.server!!.port!!
+        val channelFuture: ChannelFuture = serverBootstrap.bind(port).sync()
+        L.info { "Astel Server Started on port $port." }
         L.info { "=================================================" }
         channelFuture.channel().closeFuture().sync()
     } finally {
