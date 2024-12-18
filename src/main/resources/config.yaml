@@ -1,10 +1,11 @@
 persistent:
   snapshot:
     path: persistent/snapshot
-    every: 60    # every 60s do persistent
+    period: 60    # every 60s do persistent
 
-memory:
+memoryClean:
   threshold: 85
+  period: 90
 
 server:
   port: 6297

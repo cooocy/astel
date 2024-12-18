@@ -26,9 +26,10 @@ fun main() {
 
     // Do some setup.
     L.info { "Astel Server Setup..." }
-    Setup.initialize(configurations.persistent!!)
-    Setup.registerSchedule(configurations.persistent!!)
-    Setup.registerShutdown(configurations.persistent!!)
+    val setup = Setup(configurations)
+    setup.initialize()
+    setup.registerSchedule()
+    setup.registerShutdown()
     L.info { "Astel Server Setup OK." }
 
     // Netty init.

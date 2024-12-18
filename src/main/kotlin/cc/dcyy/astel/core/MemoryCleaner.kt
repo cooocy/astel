@@ -1,40 +1,46 @@
 package cc.dcyy.astel.core
 
 import cc.dcyy.astel.AstelRuntime
+import cc.dcyy.astel.MemoryCleanC
 import cc.dcyy.astel.core.evict.Evictor
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
 
-data class MemoryConfigs(val threshold: Int)
-
+/**
+ * A Memory Cleaner to clean temporary keys and values, supported by The Evictor.
+ *
+ */
 object MemoryCleaner {
 
     val L = KotlinLogging.logger {}
 
     /**
-     * Clean all temporary keys and values.
+     * Clean the memory by evictor.
+     * If memory used > threshold, clean all temporary keys; else do random clean.
      */
-    fun clean(c: MemoryConfigs) {
+    fun clean(c: MemoryCleanC) {
+        L.info("Clean Begin...")
         val before = AstelRuntime.memory()
         val usedPercentBefore = before.used / before.total
-        if (usedPercentBefore < c.threshold) {
-            L.info { "No need to clean. Current memory used: ${usedPercentBefore}%, threshold: $c.threshold" }
-            return
-        }
         val usedMbBefore = before.used / (1014 * 1024)
-        L.info { "Clean will begin. Current memory used: ${usedMbBefore}MB, percent: $usedPercentBefore" }
+        L.info { "Current memory: Used = ${usedMbBefore}MB, UsedPercent = $usedPercentBefore; Threshold: ${c.threshold}" }
 
         val begin = Instant.now()
-        Evictor.fullEvict()
+        if (usedPercentBefore < c.threshold!!) {
+            L.info { "Do random clean..." }
+            Evictor.randomEvict()
+        } else {
+            L.info { "Do full clean..." }
+            Evictor.fullEvict()
+        }
+
         val after = AstelRuntime.memory()
         val usedPercentAfter = after.used / after.total
         val usedMbAfter = after.used / (1014 * 1024)
-        L.info { "Clean end. Current memory used: ${usedMbAfter}MB, percent: $usedPercentAfter, released: ${usedMbBefore - usedMbAfter}MB." }
-
         val end = Instant.now()
         val const = Duration.between(begin, end).toMillis()
-        L.info { "Clean end. const: $const" }
+        L.info { "Clean End. const: ${const}ms. Current memory: Used = ${usedMbAfter}MB, UsedPercent = $usedPercentAfter, Released: ${usedMbBefore - usedMbAfter}MB." }
     }
 
 }
