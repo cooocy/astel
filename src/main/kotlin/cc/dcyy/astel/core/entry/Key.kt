@@ -2,7 +2,7 @@ package cc.dcyy.astel.core.entry
 
 class Key private constructor() {
 
-    var key: String = ""                    // The original key set by customer, unique.
+    var k: String = ""                    // The original key set by customer, unique.
         private set
     var hash: Int = 0                       // The hash code of this key, used to partition, not unique, maybe duplicated.
         private set
@@ -16,7 +16,7 @@ class Key private constructor() {
                 throw IllegalArgumentException("Key cannot be empty.")
             }
             val key = Key()
-            key.key = k
+            key.k = k
             key.hash = hash(k)
             return key
         }
@@ -29,7 +29,7 @@ class Key private constructor() {
     }
 
     override fun toString(): String {
-        return "Key(key='$key', hash=$hash)"
+        return "Key(key='$k', hash=$hash)"
     }
 
     /**
@@ -40,7 +40,7 @@ class Key private constructor() {
         if (javaClass != other?.javaClass) return false
 
         other as Key
-        return key == other.key
+        return k == other.k
     }
 
     override fun hashCode(): Int {

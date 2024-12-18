@@ -6,8 +6,6 @@ abstract class Value {
     private val forever: Instant = Instant.EPOCH
 
     var expires: Instant = forever // Default value is `forever`, means forever.
-        protected set
-
 
     /**
      * Judge if the value is expired.

@@ -19,10 +19,10 @@ object CommandExecutor {
             return when (request.command) {
                 Command.set -> doSet(request)
                 Command.get -> doGet(request)
-                Command.del -> TODO()
-                Command.exists -> TODO()
-                Command.expire -> TODO()
-                Command.ttl -> TODO()
+                Command.del -> doDel(request)
+                Command.exists -> doExists(request)
+                Command.expire -> doExpire(request)
+                Command.ttl -> doTtl(request)
                 Command.lpush -> TODO()
                 Command.rpush -> TODO()
                 Command.lpop -> TODO()
@@ -51,7 +51,7 @@ object CommandExecutor {
         if (astelRequest.args.size != 2) {
             throw CommandArgsErrException()
         }
-        Astel.put(Key.new(astelRequest.args[0] as String), Strings.new(astelRequest.args[1] as String))
+        Astel.put(Key.new(astelRequest.args[0]), Strings.new(astelRequest.args[1]))
         return AstelResponse.ok("Done.")
     }
 
@@ -59,7 +59,7 @@ object CommandExecutor {
         if (astelRequest.args.size != 1) {
             throw CommandArgsErrException()
         }
-        val value = Astel.get(Key.new(astelRequest.args[0] as String))
+        val value = Astel.get(Key.new(astelRequest.args[0]))
         if (value == null) {
             return AstelResponse.ok("")
         }
@@ -67,6 +67,39 @@ object CommandExecutor {
             throw ValueTypeNotMatchException()
         }
         return AstelResponse.ok(value.v)
+    }
+
+    private fun doDel(astelRequest: AstelRequest): AstelResponse {
+        if (astelRequest.args.size != 1) {
+            throw CommandArgsErrException()
+        }
+        Astel.remove(Key.new(astelRequest.args[0]))
+        return AstelResponse.ok("Done.")
+    }
+
+    private fun doExists(astelRequest: AstelRequest): AstelResponse {
+        if (astelRequest.args.size != 1) {
+            throw CommandArgsErrException()
+        }
+        var contains = Astel.contains(Key.new(astelRequest.args[0]))
+        return AstelResponse.ok(contains)
+    }
+
+    private fun doExpire(astelRequest: AstelRequest): AstelResponse {
+        if (astelRequest.args.size != 2) {
+            throw CommandArgsErrException()
+        }
+        val key = Key.new(astelRequest.args[0])
+        val seconds = astelRequest.args[1].toLong()
+        Astel.expire(key, seconds)
+        return AstelResponse.ok("Done.")
+    }
+
+    private fun doTtl(astelRequest: AstelRequest): AstelResponse {
+        if (astelRequest.args.size != 1) {
+            throw CommandArgsErrException()
+        }
+        return AstelResponse.ok(Astel.ttl(Key.new(astelRequest.args[0])))
     }
 
 }

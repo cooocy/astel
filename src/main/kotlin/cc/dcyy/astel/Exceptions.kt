@@ -20,6 +20,8 @@ class CommandArgsErrException() : AstelException(4, "[AstelException] Command ar
 
 class ValueTypeNotMatchException() : AstelException(5, "[AstelException] Value type not match.")
 
+class UnsupportOperationException() : AstelException(6, "[AstelException]  Unsupport operation.")
+
 /**
  * The Service Errors, e.g. Some exceptions about netty, network, message and so on.
  * code: 50 ~ 79

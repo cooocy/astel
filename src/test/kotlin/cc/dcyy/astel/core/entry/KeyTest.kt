@@ -9,7 +9,7 @@ class KeyTest {
     fun testNew() {
         assertThrows(IllegalArgumentException::class.java) { Key.Companion.new("") }
         val k1 = Key.Companion.new("k1")
-        assertTrue(k1.key.isNotBlank())
+        assertTrue(k1.k.isNotBlank())
         assertTrue(k1.hash > 0)
     }
 

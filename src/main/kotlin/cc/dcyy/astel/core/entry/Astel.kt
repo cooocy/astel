@@ -1,9 +1,13 @@
 package cc.dcyy.astel.core.entry
 
 import cc.dcyy.astel.AstelFillException
+import cc.dcyy.astel.UnsupportOperationException
 import cc.dcyy.astel.core.evict.ExpiresPool
 import java.util.HashMap
 import mu.KotlinLogging
+import java.time.Duration
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 object Astel {
     val tbl = arrayOfNulls<HashMap<Key, Value>>(TBL_SIZE)
@@ -86,6 +90,28 @@ object Astel {
      */
     fun size(): Int {
         return tbl.sumOf { it?.size ?: 0 }
+    }
+
+    /**
+     * Set the expire time for spec key. The expire time is ${seconds} seconds after current.
+     */
+    fun expire(key: Key, seconds: Long) {
+        var value = get(key) ?: throw UnsupportOperationException()
+        value.expires = Instant.now().plusSeconds(seconds.toLong())
+        if (value.isExpired()) {
+            ExpiresPool.put(key)
+        }
+    }
+
+    /**
+     * Get the expire seconds. 0 means expired or the key not exists. -1 means forever.
+     */
+    fun ttl(key: Key): Long {
+        val value = get(key) ?: return 0
+        if (value.isTemporary()) {
+            return Duration.between(Instant.now(), value.expires).get(ChronoUnit.SECONDS)
+        }
+        return -1
     }
 
     /**

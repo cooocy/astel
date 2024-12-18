@@ -11,7 +11,7 @@ import cc.dcyy.astel.ASTEL_UNEXPECTED
 /**
  * The astel request.
  */
-class AstelRequest(val command: Command, val args: List<Any>)
+class AstelRequest(val command: Command, val args: List<String>)
 
 /**
  * The astel response.

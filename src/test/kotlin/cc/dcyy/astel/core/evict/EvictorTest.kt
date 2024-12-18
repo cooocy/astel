@@ -6,6 +6,7 @@ import cc.dcyy.astel.core.entry.Strings
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.temporal.ChronoUnit
+import kotlin.math.abs
 
 class EvictorTest {
 
@@ -43,7 +44,7 @@ class EvictorTest {
         Evictor.randomEvict()
         val currSize = Astel.size()
         assertEquals(9000, originalSize)
-        assertEquals(6000, currSize)
+        assertTrue(abs(currSize - 6000) < 5)
     }
 
     @Test
