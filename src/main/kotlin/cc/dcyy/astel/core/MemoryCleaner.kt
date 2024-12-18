@@ -1,7 +1,7 @@
 package cc.dcyy.astel.core
 
+import cc.dcyy.astel.AstelRuntime
 import cc.dcyy.astel.core.evict.Evictor
-import cc.dcyy.astel.memory
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
@@ -16,7 +16,7 @@ object MemoryCleaner {
      * Clean all temporary keys and values.
      */
     fun clean(c: MemoryConfigs) {
-        val before = memory()
+        val before = AstelRuntime.memory()
         val usedPercentBefore = before.used / before.total
         if (usedPercentBefore < c.threshold) {
             L.info { "No need to clean. Current memory used: ${usedPercentBefore}%, threshold: $c.threshold" }
@@ -27,7 +27,7 @@ object MemoryCleaner {
 
         val begin = Instant.now()
         Evictor.fullEvict()
-        val after = memory()
+        val after = AstelRuntime.memory()
         val usedPercentAfter = after.used / after.total
         val usedMbAfter = after.used / (1014 * 1024)
         L.info { "Clean end. Current memory used: ${usedMbAfter}MB, percent: $usedPercentAfter, released: ${usedMbBefore - usedMbAfter}MB." }

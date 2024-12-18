@@ -13,58 +13,61 @@ import java.time.Instant
 import java.time.Duration
 import mu.KotlinLogging
 
-private val kryo = Kryo()
-private val L = KotlinLogging.logger {}
+object SnapshotChief {
 
-// Only in this way can the following initialization code be executed.
-val neverRemove = run {
-    kryo.isRegistrationRequired = false
-}
+    private val kryo = Kryo()
+    private val L = KotlinLogging.logger {}
 
-/**
- * Serialize the Astel to local file system.
- */
-fun serialize(filePath: Path) {
-    val begin = Instant.now()
-    Files.createDirectories(filePath.parent);
-    if (Files.exists(filePath)) {
-        Files.delete(filePath)
+    init {
+        kryo.isRegistrationRequired = false
     }
-    Files.createFile(filePath)
-    try {
-        FileOutputStream(filePath.toFile()).use { fos ->
-            Output(fos).use { output ->
-                kryo.writeObject(output, Astel.tbl)
-            }
+
+    /**
+     * Serialize the Astel to local file system.
+     */
+    fun serialize(filePath: Path) {
+        val begin = Instant.now()
+        Files.createDirectories(filePath.parent);
+        if (Files.exists(filePath)) {
+            Files.delete(filePath)
         }
-        val end = Instant.now()
-        val const = Duration.between(begin, end).toMillis()
-        L.info { "Serialize OK. Const: $const ms, File: $filePath" }
-    } catch (e: Exception) {
-        L.error { e }
-    }
-}
-
-/**
- * Deserialize from local file system and then fill into Astel.
- * The original data in Astel will be removed.
- */
-fun deserialize(filePath: Path) {
-    val begin = Instant.now()
-    if (!Files.exists(filePath)) {
-        throw SnapshotNotFoundException("Snapshot file does not exist: $filePath")
-    }
-    try {
-        FileInputStream(filePath.toFile()).use { fis ->
-            Input(fis).use { input ->
-                val tbl = kryo.readObject(input, Astel.tbl::class.java)
-                Astel.clearAndFill(tbl)
+        Files.createFile(filePath)
+        try {
+            FileOutputStream(filePath.toFile()).use { fos ->
+                Output(fos).use { output ->
+                    kryo.writeObject(output, Astel.tbl)
+                }
             }
+            val end = Instant.now()
+            val const = Duration.between(begin, end).toMillis()
+            L.info { "Serialize OK. Const: $const ms, File: $filePath" }
+        } catch (e: Exception) {
+            L.error { e }
         }
-        val end = Instant.now()
-        val const = Duration.between(begin, end).toMillis()
-        L.info { "Deserialize OK. Const: $const ms, File: $filePath" }
-    } catch (e: Exception) {
-        L.error { e }
     }
+
+    /**
+     * Deserialize from local file system and then fill into Astel.
+     * The original data in Astel will be removed.
+     */
+    fun deserialize(filePath: Path) {
+        val begin = Instant.now()
+        if (!Files.exists(filePath)) {
+            throw SnapshotNotFoundException("Snapshot file does not exist: $filePath")
+        }
+        try {
+            FileInputStream(filePath.toFile()).use { fis ->
+                Input(fis).use { input ->
+                    val tbl = kryo.readObject(input, Astel.tbl::class.java)
+                    Astel.clearAndFill(tbl)
+                }
+            }
+            val end = Instant.now()
+            val const = Duration.between(begin, end).toMillis()
+            L.info { "Deserialize OK. Const: $const ms, File: $filePath" }
+        } catch (e: Exception) {
+            L.error { e }
+        }
+    }
+
 }

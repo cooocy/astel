@@ -1,8 +1,6 @@
 package cc.dcyy.astel.server
 
-import cc.dcyy.astel.core.AstelShutdown
-import cc.dcyy.astel.core.AstelInitializer
-import cc.dcyy.astel.loadConfig
+import cc.dcyy.astel.Configs
 import cc.dcyy.astel.server.handler.inbound.AdminInboundHandler
 import cc.dcyy.astel.server.handler.inbound.AstelInboundHandler
 import cc.dcyy.astel.server.handler.inbound.RecordRequestInboundHandler
@@ -24,16 +22,14 @@ fun main() {
     L.info { "=================================================" }
     L.info { "Astel Server Starting..." }
 
-    val configurations = loadConfig("config.yaml")
+    val configurations = Configs.loadConfig("config.yaml")
 
-    // Astel init.
-    AstelInitializer.init(configurations.persistent!!)
-
-    // Register scheduled task.
-    Schedule.schedule(configurations.persistent!!)
-
-    // Register shutdown hook.
-    Runtime.getRuntime().addShutdownHook(Thread { AstelShutdown.shutdown(configurations.persistent!!) })
+    // Do some setup.
+    L.info { "Astel Server Setup..." }
+    Setup.initialize(configurations.persistent!!)
+    Setup.registerSchedule(configurations.persistent!!)
+    Setup.registerShutdown(configurations.persistent!!)
+    L.info { "Astel Server Setup OK." }
 
     // Netty init.
     // The server only has one NioServerSocketChannel, no need to specify the boos group thread(1)
@@ -64,4 +60,5 @@ fun main() {
         workerGroup.shutdownGracefully()
         astelWorkerGroup.shutdownGracefully()
     }
+
 }

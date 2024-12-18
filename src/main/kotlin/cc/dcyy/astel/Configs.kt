@@ -2,11 +2,15 @@ package cc.dcyy.astel
 
 import org.yaml.snakeyaml.Yaml
 
-/**
- * Load configs in resources.
- */
-fun loadConfig(path: String): Configurations {
-    return Yaml().loadAs(ClassLoader.getSystemResourceAsStream(path), Configurations::class.java)
+object Configs {
+
+    /**
+     * Load configs in resources.
+     */
+    fun loadConfig(path: String): Configurations {
+        return Yaml().loadAs(ClassLoader.getSystemResourceAsStream(path), Configurations::class.java)
+    }
+
 }
 
 class Configurations(var persistent: PersistentC? = null, var memory: MemoryC? = null, var server: ServerC? = null)
