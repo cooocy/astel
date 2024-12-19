@@ -13,6 +13,7 @@ class EvictorTest {
     @Test
     fun testRandomEvict() {
         Astel.clear()
+        ExpiresPool.clear()
         for (i in 0 until 10) {
             Astel.put(Key.new("k$i"), Strings.new("v$i", -100, ChronoUnit.MICROS))
         }

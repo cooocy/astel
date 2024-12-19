@@ -7,7 +7,10 @@ class MemoryCleanerTest {
 
     @Test
     fun testClean() {
-        MemoryCleaner.clean(MemoryCleanC(20))
+        val c = MemoryCleanC()
+        c.threshold = 20
+        c.period = 10L
+        MemoryCleaner.clean(c)
     }
 
 }

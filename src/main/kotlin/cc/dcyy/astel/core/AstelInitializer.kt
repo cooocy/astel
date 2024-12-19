@@ -3,7 +3,6 @@ package cc.dcyy.astel.core
 import cc.dcyy.astel.PersistentC
 import cc.dcyy.astel.core.persistent.SnapshotChief
 import mu.KotlinLogging
-import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
@@ -15,15 +14,10 @@ object AstelInitializer {
 
     fun init(persistentC: PersistentC) {
         L.info { "Astel Starting..." }
-        val path: String = persistentC.snapshot!!.path!!
-        val p = Paths.get(path, "00.sn")
-        if (Files.exists(p)) {
-            L.info { "The snapshot will be deserialized. path: $p" }
-            SnapshotChief.deserialize(p)
-            L.info { "Astel Started." }
-        } else {
-            L.info { "Astel Started. No snapshot." }
-        }
+        val dir = Paths.get(persistentC.snapshot!!.path!!)
+        L.info { "The snapshot will be deserialized. dir: $dir" }
+        SnapshotChief.deserialize(dir)
+        L.info { "Astel Started." }
     }
 
 }

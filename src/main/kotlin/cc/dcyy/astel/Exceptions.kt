@@ -10,10 +10,6 @@ private const val SERVICE_UNEXPECTED = 79
  */
 abstract class AstelException(val code: Int, override val message: String) : RuntimeException(message)
 
-class AstelFillException(message: String) : AstelException(1, message)
-
-class SnapshotNotFoundException(message: String) : AstelException(2, message)
-
 class UnknownCommandException() : AstelException(3, "[AstelException] Unknown command.")
 
 class CommandArgsErrException() : AstelException(4, "[AstelException] Command argument error.")
@@ -21,6 +17,12 @@ class CommandArgsErrException() : AstelException(4, "[AstelException] Command ar
 class ValueTypeNotMatchException() : AstelException(5, "[AstelException] Value type not match.")
 
 class UnsupportOperationException() : AstelException(6, "[AstelException]  Unsupport operation.")
+
+class AstelFillException(message: String) : AstelException(30, message)
+
+class SerializeToSnapshotException : AstelException(31, "[AstelException] Serialize to snapshot error.")
+
+class DeserializeFromSnapshotException : AstelException(32, "[AstelException] Deserialize from snapshot error.")
 
 /**
  * The Service Errors, e.g. Some exceptions about netty, network, message and so on.

@@ -5,10 +5,9 @@ import cc.dcyy.astel.core.AstelInitializer
 import cc.dcyy.astel.core.AstelShutdown
 import cc.dcyy.astel.core.MemoryCleaner
 import cc.dcyy.astel.core.persistent.SnapshotChief
-import io.netty.channel.DefaultEventLoop
-import io.netty.channel.nio.NioEventLoop
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.util.concurrent.DefaultThreadFactory
+import mu.KotlinLogging
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
@@ -16,6 +15,8 @@ import java.util.concurrent.TimeUnit
  * Do some setup.
  */
 class Setup(val configurations: Configurations) {
+
+    private val L = KotlinLogging.logger {}
 
     /**
      * Do some init.
@@ -31,14 +32,22 @@ class Setup(val configurations: Configurations) {
         // Do persistent every n seconds, delay 30s after starting.
         val scheduleEventLoopGroup = NioEventLoopGroup(1, DefaultThreadFactory("netty-astel-schedule", true))
         scheduleEventLoopGroup.scheduleAtFixedRate({
-            val path: String = configurations.persistent!!.snapshot!!.path!!
-            val p = Paths.get(path, "00.sn")
-            SnapshotChief.serialize(p)
+            try {
+                val p = Paths.get(configurations.persistent!!.snapshot!!.path!!)
+                SnapshotChief.serialize(p)
+            } catch (e: Exception) {
+                L.error { e }
+            }
         }, 30, configurations.persistent!!.snapshot!!.period!!, TimeUnit.SECONDS)
+
 
         // Do memory clean.
         scheduleEventLoopGroup.scheduleAtFixedRate({
-            MemoryCleaner.clean(configurations.memoryClean!!)
+            try {
+                MemoryCleaner.clean(configurations.memoryClean!!)
+            } catch (e: Exception) {
+                L.error { e }
+            }
         }, 60, configurations.memoryClean!!.period!!, TimeUnit.SECONDS)
 
     }
@@ -47,7 +56,13 @@ class Setup(val configurations: Configurations) {
      * Register all shutdown hooks.
      */
     fun registerShutdown() {
-        Runtime.getRuntime().addShutdownHook(Thread({ AstelShutdown.shutdown(configurations.persistent!!) }, "server-shutdown"))
+        Runtime.getRuntime().addShutdownHook(Thread({
+            try {
+                AstelShutdown.shutdown(configurations.persistent!!)
+            } catch (e: Exception) {
+                L.error { e }
+            }
+        }, "server-shutdown"))
     }
 
 }

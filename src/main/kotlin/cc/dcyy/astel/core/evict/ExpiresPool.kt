@@ -39,4 +39,8 @@ object ExpiresPool {
         return set.size
     }
 
+    fun clear() {
+        set.clear()
+    }
+
 }

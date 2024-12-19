@@ -1,6 +1,6 @@
 persistent:
   snapshot:
-    path: persistent/snapshot
+    path: persistent/snapshots
     period: 60    # every 60s do persistent
 
 memory-clean:

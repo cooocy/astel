@@ -8,6 +8,7 @@ import cc.dcyy.astel.ValueTypeNotMatchException
 import cc.dcyy.astel.core.entry.Key
 import cc.dcyy.astel.core.entry.Listl
 import cc.dcyy.astel.core.entry.Strings
+import cc.dcyy.astel.core.evict.ExpiresPool
 import org.junit.jupiter.api.Assertions.*
 import java.time.Duration
 import java.time.Instant
@@ -102,6 +103,7 @@ class CommandExecutorTest {
     @Test
     fun testDoExpire() {
         Astel.clear()
+        ExpiresPool.clear()
         Astel.put(Key.new("name"), Strings.new("cooocy"))
         assertFalse(Astel.get(Key.new("name"))!!.isTemporary())
         val curr = Instant.now()
@@ -116,6 +118,7 @@ class CommandExecutorTest {
     @Test
     fun testDoTtl() {
         Astel.clear()
+        ExpiresPool.clear()
         val key = Key.new("hobby")
         Astel.put(key, Strings.new("Kotlin"))
         assertEquals(-1L, CommandExecutor.execute("ttl hobby").content)

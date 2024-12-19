@@ -11,10 +11,9 @@ object AstelShutdown {
 
     fun shutdown(persistentC: PersistentC) {
         L.info { "Astel Shutdown... " }
-        val path: String = persistentC.snapshot!!.path!!
-        val p = Paths.get(path, "00.sn")
-        L.info { "The Astel memory data will be serialized. path: $p" }
-        SnapshotChief.serialize(p)
+        val dir = Paths.get(persistentC.snapshot!!.path!!)
+        L.info { "The Astel memory data will be serialized. path: $dir" }
+        SnapshotChief.serialize(dir)
         L.info { "Astel Shutdown." }
     }
 
