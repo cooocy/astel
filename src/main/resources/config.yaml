@@ -3,7 +3,7 @@ persistent:
     path: persistent/snapshot
     period: 60    # every 60s do persistent
 
-memoryClean:
+memory-clean:
   threshold: 85
   period: 90
 

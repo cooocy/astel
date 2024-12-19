@@ -1,7 +1,7 @@
 package cc.dcyy.astel.server.protocol
 
 import cc.dcyy.astel.IllegalMessageServiceError
-import cc.dcyy.astel.Json
+import cc.dcyy.astel.Jackson
 import cc.dcyy.astel.SomeObjectNullServiceError
 import cc.dcyy.astel.UnexpectedServiceError
 import io.netty.buffer.ByteBuf
@@ -65,7 +65,7 @@ class MessageCodec : ByteToMessageCodec<Message>() {
             }
         }
         out.writeByte(scope)
-        val messageBytes = Json.toJson(msg).encodeToByteArray()
+        val messageBytes = Jackson.toJson(msg).encodeToByteArray()
         out.writeInt(messageBytes.size)
         out.writeBytes(messageBytes)
     }

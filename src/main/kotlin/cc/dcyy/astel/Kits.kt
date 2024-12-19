@@ -1,6 +1,8 @@
 package cc.dcyy.astel
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import java.io.File
 
 object AstelRuntime {
 
@@ -14,11 +16,16 @@ object AstelRuntime {
 
 }
 
-object Json {
-    private val objectMapper = ObjectMapper()
+object Jackson {
+    private val jsonObjectMapper = ObjectMapper()
+    private val yamlObjectMapper = ObjectMapper(YAMLFactory())
 
     fun toJson(any: Any): String {
-        return objectMapper.writeValueAsString(any)
+        return jsonObjectMapper.writeValueAsString(any)
+    }
+
+    fun <T> fromYamlByFile(yamlFile: File, valueType: Class<T>): T {
+        return yamlObjectMapper.readValue(yamlFile, valueType)
     }
 
 }
