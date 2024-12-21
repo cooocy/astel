@@ -2,10 +2,11 @@ package cc.dcyy.astel.core.entrance
 
 import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.AstelException
-import cc.dcyy.astel.CommandArgsErrException
+import cc.dcyy.astel.KeyNotFoundException
 import cc.dcyy.astel.UnknownCommandException
 import cc.dcyy.astel.ValueTypeNotMatchException
 import cc.dcyy.astel.core.entry.Key
+import cc.dcyy.astel.core.entry.Listl
 import cc.dcyy.astel.core.entry.Strings
 import mu.KotlinLogging
 
@@ -23,12 +24,12 @@ object CommandExecutor {
                 Command.exists -> doExists(request)
                 Command.expire -> doExpire(request)
                 Command.ttl -> doTtl(request)
-                Command.lpush -> TODO()
-                Command.rpush -> TODO()
-                Command.lpop -> TODO()
-                Command.rpop -> TODO()
-                Command.llen -> TODO()
-                Command.lrange -> TODO()
+                Command.lpush -> doLpush(request)
+                Command.rpush -> doRpush(request)
+                Command.lpop -> doLpop(request)
+                Command.rpop -> doRpop(request)
+                Command.llen -> doLlen(request)
+                Command.lrange -> doLrange(request)
             }
         } catch (e: AstelException) {
             L.error { "Execute catch expected exception. $e" }
@@ -48,17 +49,13 @@ object CommandExecutor {
 
 
     private fun doSet(astelRequest: AstelRequest): AstelResponse {
-        if (astelRequest.args.size != 2) {
-            throw CommandArgsErrException()
-        }
+        astelRequest.checkArgsSize(2)
         Astel.put(Key.new(astelRequest.args[0]), Strings.new(astelRequest.args[1]))
         return AstelResponse.ok("Done.")
     }
 
     private fun doGet(astelRequest: AstelRequest): AstelResponse {
-        if (astelRequest.args.size != 1) {
-            throw CommandArgsErrException()
-        }
+        astelRequest.checkArgsSize(1)
         val value = Astel.get(Key.new(astelRequest.args[0]))
         if (value == null) {
             return AstelResponse.ok("")
@@ -70,25 +67,19 @@ object CommandExecutor {
     }
 
     private fun doDel(astelRequest: AstelRequest): AstelResponse {
-        if (astelRequest.args.size != 1) {
-            throw CommandArgsErrException()
-        }
+        astelRequest.checkArgsSize(1)
         Astel.remove(Key.new(astelRequest.args[0]))
         return AstelResponse.ok("Done.")
     }
 
     private fun doExists(astelRequest: AstelRequest): AstelResponse {
-        if (astelRequest.args.size != 1) {
-            throw CommandArgsErrException()
-        }
+        astelRequest.checkArgsSize(1)
         var contains = Astel.contains(Key.new(astelRequest.args[0]))
         return AstelResponse.ok(contains)
     }
 
     private fun doExpire(astelRequest: AstelRequest): AstelResponse {
-        if (astelRequest.args.size != 2) {
-            throw CommandArgsErrException()
-        }
+        astelRequest.checkArgsSize(2)
         val key = Key.new(astelRequest.args[0])
         val seconds = astelRequest.args[1].toLong()
         Astel.expire(key, seconds)
@@ -96,10 +87,76 @@ object CommandExecutor {
     }
 
     private fun doTtl(astelRequest: AstelRequest): AstelResponse {
-        if (astelRequest.args.size != 1) {
-            throw CommandArgsErrException()
-        }
+        astelRequest.checkArgsSize(1)
         return AstelResponse.ok(Astel.ttl(Key.new(astelRequest.args[0])))
+    }
+
+    private fun doLpush(astelRequest: AstelRequest): AstelResponse {
+        astelRequest.checkArgsSize(2)
+        val key = Key.new(astelRequest.args[0])
+        val element = astelRequest.args[1]
+        val v = Astel.get(key) ?: Astel.put(key, Listl.new(element))
+        if (v !is Listl) {
+            throw ValueTypeNotMatchException()
+        }
+        v.leftPush(element)
+        return AstelResponse.ok("Done.")
+    }
+
+    private fun doLpop(astelRequest: AstelRequest): AstelResponse {
+        astelRequest.checkArgsSize(1)
+        val key = Key.new(astelRequest.args[0])
+        val v = Astel.get(key) ?: throw KeyNotFoundException()
+        if (v !is Listl) {
+            throw ValueTypeNotMatchException()
+        }
+        val element = v.leftPop() ?: ""
+        return AstelResponse.ok(element)
+    }
+
+    private fun doRpush(astelRequest: AstelRequest): AstelResponse {
+        astelRequest.checkArgsSize(2)
+        val key = Key.new(astelRequest.args[0])
+        val element = astelRequest.args[1]
+        val v = Astel.get(key) ?: Astel.put(key, Listl.new(element))
+        if (v !is Listl) {
+            throw ValueTypeNotMatchException()
+        }
+        v.rightPush(element)
+        return AstelResponse.ok("Done.")
+    }
+
+    private fun doRpop(astelRequest: AstelRequest): AstelResponse {
+        astelRequest.checkArgsSize(1)
+        val key = Key.new(astelRequest.args[0])
+        val v = Astel.get(key) ?: throw KeyNotFoundException()
+        if (v !is Listl) {
+            throw ValueTypeNotMatchException()
+        }
+        val element = v.rightPop() ?: ""
+        return AstelResponse.ok(element)
+    }
+
+    private fun doLlen(astelRequest: AstelRequest): AstelResponse {
+        astelRequest.checkArgsSize(1)
+        val key = Key.new(astelRequest.args[0])
+        val v = Astel.get(key) ?: throw KeyNotFoundException()
+        if (v !is Listl) {
+            throw ValueTypeNotMatchException()
+        }
+        return AstelResponse.ok(v.size())
+    }
+
+    private fun doLrange(astelRequest: AstelRequest): AstelResponse {
+        astelRequest.checkArgsSize(3)
+        val key = Key.new(astelRequest.args[0])
+        val v = Astel.get(key) ?: throw KeyNotFoundException()
+        if (v !is Listl) {
+            throw ValueTypeNotMatchException()
+        }
+        val start = astelRequest.args[1].toInt()
+        val end = astelRequest.args[2].toInt()
+        return AstelResponse.ok(v.range(start, end))
     }
 
 }

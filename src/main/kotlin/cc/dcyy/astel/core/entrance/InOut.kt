@@ -3,6 +3,7 @@ package cc.dcyy.astel.core.entrance
 import cc.dcyy.astel.AstelException
 import cc.dcyy.astel.OK
 import cc.dcyy.astel.ASTEL_UNEXPECTED
+import cc.dcyy.astel.CommandArgsErrException
 
 /**
  * The input(Request) and the output(Response).
@@ -11,7 +12,18 @@ import cc.dcyy.astel.ASTEL_UNEXPECTED
 /**
  * The astel request.
  */
-class AstelRequest(val command: Command, val args: List<String>)
+class AstelRequest(val command: Command, val args: List<String>) {
+
+    /**
+     * Check the args size.
+     */
+    fun checkArgsSize(size: Int) {
+        if (args.size != size) {
+            throw CommandArgsErrException()
+        }
+    }
+
+}
 
 /**
  * The astel response.

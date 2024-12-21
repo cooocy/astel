@@ -16,7 +16,7 @@ class CommandArgsErrException() : AstelException(4, "[AstelException] Command ar
 
 class ValueTypeNotMatchException() : AstelException(5, "[AstelException] Value type not match.")
 
-class UnsupportOperationException() : AstelException(6, "[AstelException]  Unsupport operation.")
+class KeyNotFoundException() : AstelException(6, "[AstelException] Key not found.")
 
 class AstelFillException(message: String) : AstelException(30, message)
 

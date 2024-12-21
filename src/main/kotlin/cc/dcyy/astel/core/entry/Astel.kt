@@ -1,7 +1,7 @@
 package cc.dcyy.astel.core.entry
 
 import cc.dcyy.astel.AstelFillException
-import cc.dcyy.astel.UnsupportOperationException
+import cc.dcyy.astel.KeyNotFoundException
 import cc.dcyy.astel.core.evict.ExpiresPool
 import java.util.HashMap
 import mu.KotlinLogging
@@ -32,24 +32,6 @@ object Astel {
     }
 
     /**
-     * Remove the key and its value if exists.
-     */
-    fun remove(key: Key) {
-        val value = tbl[indexOf(key)]?.remove(key) ?: return
-        if (value.isTemporary()) {
-            ExpiresPool.remove(key)
-        }
-    }
-
-    /**
-     * Clear all keys and values.
-     */
-    fun clear() {
-        L.info { "Astel cleared. Original size: ${size()}" }
-        tbl.fill(null)
-    }
-
-    /**
      * Get the value by its key if exists.
      * When the expired value is got, the key and the value will be removed, and the key will be removed from ExpiresPool too.
      */
@@ -65,6 +47,16 @@ object Astel {
     }
 
     /**
+     * Remove the key and its value if exists.
+     */
+    fun remove(key: Key) {
+        val value = tbl[indexOf(key)]?.remove(key) ?: return
+        if (value.isTemporary()) {
+            ExpiresPool.remove(key)
+        }
+    }
+
+    /**
      * Remove the key and value if expired.
      * The key will be removed from ExpiresPool too.
      */
@@ -77,8 +69,9 @@ object Astel {
         }
     }
 
+
     /**
-     * Judge if contains this key.
+     * If contains this key.
      */
     fun contains(key: Key): Boolean {
         val index = indexOf(key)
@@ -96,7 +89,7 @@ object Astel {
      * Set the expire time for spec key. The expire time is ${seconds} seconds after current.
      */
     fun expire(key: Key, seconds: Long) {
-        var value = get(key) ?: throw UnsupportOperationException()
+        var value = get(key) ?: throw KeyNotFoundException()
         value.expires = Instant.now().plusSeconds(seconds.toLong())
         if (value.isExpired()) {
             ExpiresPool.put(key)
@@ -112,6 +105,14 @@ object Astel {
             return Duration.between(Instant.now(), value.expires).get(ChronoUnit.SECONDS)
         }
         return -1
+    }
+
+    /**
+     * Clear all keys and values.
+     */
+    fun clear() {
+        L.info { "Astel cleared. Original size: ${size()}" }
+        tbl.fill(null)
     }
 
     /**

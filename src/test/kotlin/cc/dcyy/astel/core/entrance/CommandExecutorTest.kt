@@ -2,6 +2,7 @@ package cc.dcyy.astel.core.entrance
 
 import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.CommandArgsErrException
+import cc.dcyy.astel.KeyNotFoundException
 import cc.dcyy.astel.OK
 import cc.dcyy.astel.UnknownCommandException
 import cc.dcyy.astel.ValueTypeNotMatchException
@@ -129,6 +130,125 @@ class CommandExecutorTest {
         val ttl = CommandExecutor.execute("ttl hobby").content as Long
         assertTrue(ttl > 0)
         assertTrue(ttl <= 10)
+    }
+
+    @Test
+    fun testDoLpush() {
+        Astel.clear()
+        ExpiresPool.clear()
+
+        val address = Key.new("address")
+        Astel.put(address, Strings.new("Beijing"))
+        val r1 = CommandExecutor.execute("lpush address Shanghai")
+        assertEquals(ValueTypeNotMatchException().code, r1.code)
+
+        val hobby = Key.new("hobby")
+        Astel.put(hobby, Listl.new("coding", "running"))
+        CommandExecutor.execute("lpush hobby kotlin")
+        val v = Astel.get(hobby) as Listl
+        val expected = Listl.new("kotlin", "coding", "running")
+        for (i in 0 until v.size()) {
+            assertEquals(expected.get(i), v.get(i))
+        }
+    }
+
+    @Test
+    fun testDoLpop() {
+        Astel.clear()
+        ExpiresPool.clear()
+
+        val r1 = CommandExecutor.execute("lpop address")
+        assertEquals(KeyNotFoundException().code, r1.code)
+
+        val address = Key.new("address")
+        Astel.put(address, Strings.new("Beijing"))
+        val r2 = CommandExecutor.execute("lpop address")
+        assertEquals(ValueTypeNotMatchException().code, r2.code)
+
+        val hobby = Key.new("hobby")
+        Astel.put(hobby, Listl.new("coding", "running"))
+        val r3 = CommandExecutor.execute("lpop hobby")
+        assertEquals("coding", r3.content)
+    }
+
+    @Test
+    fun testDoRpush() {
+        Astel.clear()
+        ExpiresPool.clear()
+
+        val address = Key.new("address")
+        Astel.put(address, Strings.new("Beijing"))
+        val r1 = CommandExecutor.execute("rpush address Shanghai")
+        assertEquals(ValueTypeNotMatchException().code, r1.code)
+
+        val hobby = Key.new("hobby")
+        Astel.put(hobby, Listl.new("coding", "running"))
+        CommandExecutor.execute("rpush hobby kotlin")
+        val v = Astel.get(hobby) as Listl
+        val expected = Listl.new("coding", "running", "kotlin")
+        for (i in 0 until v.size()) {
+            assertEquals(expected.get(i), v.get(i))
+        }
+    }
+
+    @Test
+    fun testDoRpop() {
+        Astel.clear()
+        ExpiresPool.clear()
+
+        val r1 = CommandExecutor.execute("rpop address")
+        assertEquals(KeyNotFoundException().code, r1.code)
+
+        val address = Key.new("address")
+        Astel.put(address, Strings.new("Beijing"))
+        val r2 = CommandExecutor.execute("rpop address")
+        assertEquals(ValueTypeNotMatchException().code, r2.code)
+
+        val hobby = Key.new("hobby")
+        Astel.put(hobby, Listl.new("coding", "running"))
+        val r3 = CommandExecutor.execute("rpop hobby")
+        assertEquals("running", r3.content)
+    }
+
+    @Test
+    fun testLlen() {
+        Astel.clear()
+        ExpiresPool.clear()
+
+        val r1 = CommandExecutor.execute("rpop address")
+        assertEquals(KeyNotFoundException().code, r1.code)
+
+        val address = Key.new("address")
+        Astel.put(address, Strings.new("Beijing"))
+        val r3 = CommandExecutor.execute("llen address")
+        assertEquals(ValueTypeNotMatchException().code, r3.code)
+
+        val hobby = Key.new("hobby")
+        Astel.put(hobby, Listl.new("coding", "running"))
+        val r4 = CommandExecutor.execute("llen hobby")
+        assertEquals(2, r4.content)
+    }
+
+    @Test
+    fun testLrange() {
+        Astel.clear()
+        ExpiresPool.clear()
+
+        val r1 = CommandExecutor.execute("lrange address 0 1")
+        assertEquals(KeyNotFoundException().code, r1.code)
+
+        val address = Key.new("address")
+        Astel.put(address, Strings.new("Beijing"))
+        val r3 = CommandExecutor.execute("lrange address 0 1")
+        assertEquals(ValueTypeNotMatchException().code, r3.code)
+
+        val hobby = Key.new("hobby")
+        Astel.put(hobby, Listl.new("coding", "running", "kotlin", "java", "python"))
+        val r4 = CommandExecutor.execute("lrange hobby 1 3")
+        val content = r4.content as List<*>
+        assertEquals(2, content.size)
+        assertEquals("running", content[0])
+        assertEquals("kotlin", content[1])
     }
 
 }
