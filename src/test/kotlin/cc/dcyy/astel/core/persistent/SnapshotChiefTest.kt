@@ -4,6 +4,7 @@ import cc.dcyy.astel.core.entry.Astel
 import cc.dcyy.astel.core.entry.Key
 import cc.dcyy.astel.core.entry.Strings
 import org.junit.jupiter.api.Assertions.*
+import java.lang.reflect.Method
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.temporal.ChronoUnit
@@ -40,6 +41,42 @@ class SnapshotChiefTest {
         assertEquals(p1, p2)
 
         Files.delete(p1)
+    }
+
+    @Test
+    fun testCleanExpiredSnapshots() {
+        deleteAllSnapshots()
+        batchWriteSnapshots(10)
+        SnapshotChief.cleanExpiredSnapshots(Paths.get("persistent/snapshots"), 3)
+        assertEquals(3, Files.list(Paths.get("persistent/snapshots")).count())
+    }
+
+    @Test
+    fun testGenerateSnapshotFileName() {
+        val fileName = invokeGenerateSnapshotFileName()
+        assertTrue(fileName.endsWith(".sn"))
+    }
+
+    private fun invokeGenerateSnapshotFileName(): String {
+        val method: Method = SnapshotChief::class.java.getDeclaredMethod("generateSnapshotFileName")
+        method.isAccessible = true
+        return method.invoke(SnapshotChief) as String
+    }
+
+    private fun batchWriteSnapshots(num: Int) {
+        val snapshotDir = Paths.get("persistent/snapshots")
+        for (i in 1..num) {
+            Astel.put(Key.new("k$i"), Strings.new("你好世界 $i", 1, ChronoUnit.DAYS))
+            SnapshotChief.serialize(snapshotDir)
+            Thread.sleep(1000)
+        }
+    }
+
+    private fun deleteAllSnapshots() {
+        val snapshotDir = Paths.get("persistent/snapshots")
+        if (Files.exists(snapshotDir)) {
+            Files.list(snapshotDir).forEach { Files.delete(it) }
+        }
     }
 
 }
